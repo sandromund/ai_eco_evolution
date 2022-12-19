@@ -40,20 +40,14 @@ class GameOfLive:
         self.__w = self.width // self.tile
         self.__h = self.height // self.tile
         self.resolution = self.width, self.height
-        self.__init_fields()
+        self.next_field = np.zeros(shape=(self.__w, self.__h))
+        self.current_field = np.random.randint(2, size=(self.__w, self.__h))
         pygame.init()
         self.surface = pygame.display.set_mode(self.resolution)
 
-    def __init_fields(self):
-        self.next_field = np.array([[0 for _ in range(self.__w)] for j in range(self.__h)])
-        self.current_field = [[0 for i in range(self.__w)] for _ in range(self.__h)]
-        self.current_field = np.array(
-            [[1 if i == self.__w // 2 or j == self.__h // 2 else 0 for i in range(self.__w)] for j in
-             range(self.__h)])
-
     def __draw_cells(self, res):
         for x, y, in res:
-            pygame.draw.rect(self.surface, pygame.Color('forestgreen'),
+            pygame.draw.rect(self.surface, pygame.Color('darkgreen'),
                              (x * self.tile + 2, y * self.tile + 2, self.tile - 2, self.tile - 2))
 
     def run(self):
@@ -61,18 +55,17 @@ class GameOfLive:
         clock = pygame.time.Clock()
         w, h = self.__w, self.__h
         while True:
-            self.surface.fill(pygame.Color('black'))
+            self.surface.fill(pygame.Color('white'))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
             next_field, res = update_cells(current_field, next_field, w, h)
             self.__draw_cells(res)
             current_field = deepcopy(next_field)
-            print(clock.get_fps())
             pygame.display.flip()
             clock.tick(self.fps)
 
 
 if __name__ == '__main__':
-    game = GameOfLive(width=1500, height=900, tile=10, fps=60)
+    game = GameOfLive(width=1600, height=900, tile=15, fps=30)
     game.run()
