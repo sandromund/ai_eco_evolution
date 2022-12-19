@@ -82,7 +82,6 @@ class CyclicCellularAutomat:
         clock = pygame.time.Clock()
         w, h, n = self.__w, self.__h, self.n_states
         while True:
-            self.surface.fill(pygame.Color('black'))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
