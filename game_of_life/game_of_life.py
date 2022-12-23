@@ -67,5 +67,5 @@ class GameOfLive:
 
 
 if __name__ == '__main__':
-    game = GameOfLive(width=1600, height=900, tile=15, fps=30)
+    game = GameOfLive(width=1600, height=900, tile=5, fps=30)
     game.run()
