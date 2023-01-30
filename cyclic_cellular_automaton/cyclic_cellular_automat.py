@@ -93,5 +93,5 @@ class CyclicCellularAutomat:
 
 
 if __name__ == '__main__':
-    automat = CyclicCellularAutomat(weight=1000, height=1000, n_states=8, tile=5, fps=60)
+    automat = CyclicCellularAutomat(weight=1000, height=1000, n_states=7, tile=5, fps=60)
     automat.run()
