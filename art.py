@@ -45,7 +45,7 @@ plant_list = []
 init_color_1 = random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255)
 init_color_2 = random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255)
 
-plant_list.append(Plant((150, 150, 150), (1600, 1200), 800, 600, 4))
+plant_list.append(Plant((150, 150, 150), (1600, 1200), 800, 600, 2))
 # plant_list.append(Plant(init_color_2, (1600, 1200), 1599, 1199, 5))
 
 
