@@ -12,7 +12,7 @@ class Plant:
         self.y = y
         self.size = size
 
-    def find_neighbours(self):
+    def find_neighbours(self, position_occupied):
         n1 = (self.x + self.size, self.y)
         n2 = (self.x - self.size, self.y)
         n3 = (self.x, self.y + self.size)
@@ -24,8 +24,9 @@ class Plant:
         neighbours = []
         for n in [n1, n2, n3, n4, n5, n6, n7, n8]:
             if n[0] < self.dis[0] and n[1] < self.dis[1]:
-                if random.randrange(1, 3) == 1:
-                    neighbours.append(n)
+                if position_occupied[n[0],n[1]] == 0:
+                    if random.randrange(1, 3) == 1:
+                        neighbours.append(n)
         return neighbours
 
     def create_offspring(self, x, y):
@@ -79,7 +80,7 @@ while not game_over:
     pygame.display.update()
     new_plants = []
     for plant in last_plants:
-        for neighbour in plant.find_neighbours():
+        for neighbour in plant.find_neighbours(position_occupied):
             x, y = neighbour
             if x < dis_x and y < dis_y:
                 if position_occupied[x, y] == 0:
