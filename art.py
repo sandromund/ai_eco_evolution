@@ -64,7 +64,7 @@ last_plants = plant_list
 # for xi in range(ox, ox + oa - 2):
 #    for yi in range(oy, oy + ob):
 #        position_occupied[xi][yi] = 1
-
+clock = pygame.time.Clock()
 game_over = False
 while not game_over:
     for event in pygame.event.get():
@@ -88,6 +88,10 @@ while not game_over:
                     position_occupied[x, y] = 1
     last_plants = new_plants
     plant_list += last_plants
+
+
+    clock.tick(60)
+    print(clock.get_fps())
 
     # if len(last_plants) == 0:
     #    init_color_i = random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255)
