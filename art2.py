@@ -1,3 +1,4 @@
+import numba
 import numpy as np
 import pygame
 import sys
@@ -6,8 +7,29 @@ from numba import njit
 
 
 @njit(fastmath=True)
-def create_offspring(neighbors):
-    pass
+def create_offspring(parents, h, w, spawn, reproduce_chance, color, mutation_selection, mutation_amount):
+    new_parents = []
+    n = len(parents)
+    for i in range(n):
+        x, y = parents[i]
+        neighbors = []
+        for i in range(x - 1, x + 2):
+            for j in range(y - 1, y + 2):
+                if 0 <= i < w and 0 <= j < h and not spawn[i][j]:
+                    neighbors.append((i, j))
+        for neighbor in neighbors:
+            i, j = neighbor
+            if spawn[i][j]:
+                continue
+            if random.randrange(1, reproduce_chance) == 1:
+                spawn[i][j] = True
+                color[i][j] = color[x][y]
+                k = mutation_selection[i][j]
+                c = color[i][j][k] + mutation_amount[i][j]
+                if 0 <= c <= 255:
+                    color[i][j][k] = c
+                new_parents.append(neighbor)
+    return new_parents, spawn, color
 
 
 class Art:
@@ -17,8 +39,8 @@ class Art:
         self.height = height
         self.fps = 60
         self.background_color = (255, 255, 255)
-        self.size = 3
-        self.reproduce_chance = 3  # 1/3
+        self.size = 1
+        self.reproduce_chance = 3
 
         self.__w = self.width // self.size
         self.__h = self.height // self.size
@@ -43,34 +65,10 @@ class Art:
 
         self.parents = [(x, y)]
 
-    def get_neighbors(self, parent):
-        neighbors = []
-        x, y = parent
-        for i in range(x - 1, x + 2):
-            for j in range(y - 1, y + 2):
-                if 0 <= i < self.__w and 0 <= j < self.__h and not self.spawn[i][j]:
-                    neighbors.append((i, j))
-        return neighbors
-
-    def create_offspring(self):
-        new_parents = []
-        for (x, y) in self.parents:
-            for neighbor in self.get_neighbors((x, y)):
-                i, j = neighbor
-                if self.spawn[i][j]:
-                    continue
-                if random.randrange(1, self.reproduce_chance) == 1:
-                    i, j = neighbor
-                    self.spawn[i][j] = True
-                    self.color[i][j] = self.color[x][y]
-                    k = self.mutation_selection[i][j]
-                    c = self.color[i][j][k] + self.mutation_amount[i][j]
-                    if 0 <= c <= 255:
-                        self.color[i][j][k] = c
-                    new_parents.append(neighbor)
-        self.parents = new_parents
-
     def draw(self):
+        pygame.surfarray.blit_array(self.display, self.color)
+
+    def draw_old(self):
         for x in range(self.__w):
             for y in range(self.__h):
                 if self.spawn[x][y]:
@@ -82,14 +80,21 @@ class Art:
         while True:
             self.display.fill(self.background_color)
 
-            self.draw()
-            self.create_offspring()
 
+            if len(self.parents):
+                self.parents, self.spawn, self.color = create_offspring(np.array(self.parents), h=self.__h, w=self.__w,
+                                                                        spawn=self.spawn,
+                                                                        reproduce_chance=self.reproduce_chance,
+                                                                        color=self.color,
+                                                                        mutation_selection=self.mutation_selection,
+                                                                        mutation_amount=self.mutation_amount)
+            self.draw()
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+            print(self.clock.get_fps())
             self.clock.tick(self.fps)
 
 
