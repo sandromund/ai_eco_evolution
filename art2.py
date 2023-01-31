@@ -37,10 +37,10 @@ class Art:
     def __init__(self, width=1600, height=1200):
         self.width = width
         self.height = height
-        self.fps = 60
-        self.background_color = (255, 255, 255)
+        self.fps = 100
+        #self.background_color = (0, 0, 0)
         self.size = 1
-        self.reproduce_chance = 3
+        self.reproduce_chance = 4  # [3-5] is nice, but 5 needs sometimes a few try
 
         self.__w = self.width // self.size
         self.__h = self.height // self.size
@@ -50,7 +50,7 @@ class Art:
 
         # values that gets added to the selected part of the color
         self.mutation_amount = np.random.randint(low=-10, high=11, size=(self.__w, self.__h))
-        self.color = np.full((self.__w, self.__h, 3), 255, dtype=int)
+        self.color = np.full((self.__w, self.__h, 3), 0, dtype=int)
         self.spawn = np.full((self.__w, self.__h), False, dtype=bool)
 
         x, y = self.__w // 2, self.__h // 2
@@ -78,8 +78,7 @@ class Art:
     def run(self):
 
         while True:
-            self.display.fill(self.background_color)
-
+            #self.display.fill(self.background_color)
 
             if len(self.parents):
                 self.parents, self.spawn, self.color = create_offspring(np.array(self.parents), h=self.__h, w=self.__w,
@@ -94,7 +93,7 @@ class Art:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            print(self.clock.get_fps())
+            # print(self.clock.get_fps())
             self.clock.tick(self.fps)
 
 
