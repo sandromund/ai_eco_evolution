@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 import pygame
 import sys
@@ -37,40 +36,39 @@ class Art:
     def __init__(self, width=1600, height=1200, reproduce_chance=3):
         self.fps = 100
         self.reproduce_chance = reproduce_chance  # [3-5] is nice, but 5 needs sometimes a few try
-
-        self.__w = width
-        self.__h = height
+        self.width = width
+        self.height = height
 
         # index of the rgb color that gets mutated
-        self.mutation_selection = np.random.randint(low=0, high=3, size=(self.__w, self.__h))
+        self.mutation_selection = np.random.randint(low=0, high=3, size=(self.width, self.height))
 
         # values that gets added to the selected part of the color
-        self.mutation_amount = np.random.randint(low=-10, high=11, size=(self.__w, self.__h))
-        self.color = np.full((self.__w, self.__h, 3), 0, dtype=int)
-        self.spawn = np.full((self.__w, self.__h), False, dtype=bool)
-
-        x, y = self.__w // 2, self.__h // 2
-        self.spawn[x][y] = True
-        for i in range(3):
-            self.color[x][y][i] = random.randrange(0, 255)
+        self.mutation_amount = np.random.randint(low=-10, high=11, size=(self.width, self.height))
+        self.color = np.full((self.width, self.height, 3), 0, dtype=int)
+        self.spawn = np.full((self.width, self.height), False, dtype=bool)
 
         pygame.init()
         self.clock = pygame.time.Clock()
-        self.display = pygame.display.set_mode((self.__w, self.__h))
+        self.display = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption('Art')
+        self.parents = []
 
-        self.parents = [(x, y)]
+    def spawn_init_pixel(self):
+        x, y = self.width // 2, self.height // 2
+        self.spawn[x][y] = True
+        for i in range(3):
+            self.color[x][y][i] = random.randrange(0, 255)
+        self.parents.append((x, y))
 
     def draw(self):
         pygame.surfarray.blit_array(self.display, self.color)
 
     def run(self):
 
+        self.spawn_init_pixel()
         while True:
-            #self.display.fill(self.background_color)
-
             if len(self.parents):
-                self.parents, self.spawn, self.color = create_offspring(np.array(self.parents), h=self.__h, w=self.__w,
+                self.parents, self.spawn, self.color = create_offspring(np.array(self.parents), h=self.height, w=self.width,
                                                                         spawn=self.spawn,
                                                                         reproduce_chance=self.reproduce_chance,
                                                                         color=self.color,
