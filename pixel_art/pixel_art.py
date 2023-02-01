@@ -33,25 +33,32 @@ def create_offspring(parents, h, w, spawn, reproduce_chance, color, mutation_sel
 
 class Art:
 
-    def __init__(self, width=1600, height=1200, reproduce_chance=3):
-        self.fps = 100
-        self.reproduce_chance = reproduce_chance  # [3-5] is nice, but 5 needs sometimes a few try
+    def __init__(self, width=1000, height=1000, reproduce_chance=3):
+        assert 1 < reproduce_chance < 6
+        self.reproduce_chance = reproduce_chance
         self.width = width
         self.height = height
+        self.fps = 100
 
-        # index of the rgb color that gets mutated
-        self.mutation_selection = np.random.randint(low=0, high=3, size=(self.width, self.height))
-
-        # values that gets added to the selected part of the color
-        self.mutation_amount = np.random.randint(low=-10, high=11, size=(self.width, self.height))
-        self.color = np.full((self.width, self.height, 3), 0, dtype=int)
-        self.spawn = np.full((self.width, self.height), False, dtype=bool)
+        # Arrays to handle the pixel colors
+        self.mutation_selection = None
+        self.mutation_amount = None
+        self.color = None
+        self.spawn = None
 
         pygame.init()
         self.clock = pygame.time.Clock()
         self.display = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption('Art')
+        pygame.display.set_caption('Pixel Art')
         self.parents = []
+
+    def init_set_arrays(self):
+        # index of the rgb color that gets mutated
+        self.mutation_selection = np.random.randint(low=0, high=3, size=(self.width, self.height))
+        # values that gets added to the selected part of the color
+        self.mutation_amount = np.random.randint(low=-10, high=11, size=(self.width, self.height))
+        self.spawn = np.full((self.width, self.height), False, dtype=bool)
+        self.color = np.full((self.width, self.height, 3), 0, dtype=int)
 
     def spawn_init_pixel(self):
         x, y = self.width // 2, self.height // 2
@@ -62,20 +69,22 @@ class Art:
 
     def draw(self):
         pygame.surfarray.blit_array(self.display, self.color)
+        pygame.display.update()
 
     def run(self):
-
-        self.spawn_init_pixel()
         while True:
-            if len(self.parents):
-                self.parents, self.spawn, self.color = create_offspring(np.array(self.parents), h=self.height, w=self.width,
-                                                                        spawn=self.spawn,
-                                                                        reproduce_chance=self.reproduce_chance,
-                                                                        color=self.color,
-                                                                        mutation_selection=self.mutation_selection,
-                                                                        mutation_amount=self.mutation_amount)
+            if len(self.parents) > 0:
+                self.parents, self.spawn, self.color = \
+                    create_offspring(np.array(self.parents), h=self.height, w=self.width,
+                                     spawn=self.spawn,
+                                     reproduce_chance=self.reproduce_chance,
+                                     color=self.color,
+                                     mutation_selection=self.mutation_selection,
+                                     mutation_amount=self.mutation_amount)
+            else:
+                self.init_set_arrays()
+                self.spawn_init_pixel()
             self.draw()
-            pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
