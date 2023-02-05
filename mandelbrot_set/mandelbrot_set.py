@@ -14,6 +14,7 @@ texture_array = pg.surfarray.array3d(texture).astype(dtype=np.uint32)
 @ti.data_oriented
 class Fractal:
     def __init__(self, app):
+        # https://www.youtube.com/watch?v=B01dLzU3LkQ
         self.app = app
         self.screen_array = np.full((width, height, 3), [0, 0, 0], dtype=np.uint32)
         # taichi architecture, you can use ti.cpu, ti.cuda, ti.opengl, ti.vulkan, ti.metal
